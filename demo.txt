@@ -1,0 +1,26 @@
+%pyGroff, A tiny Syntax guide
+@Subhaditya Mukherjee
+
+# Arguments needed
+- -f : input file path
+- -o : output file name. (Dont give path!)
+
+# Main syntax
+*Note that you have to remove the <>
+~% <title> : Adds a title like the one in this document
+~@ <author> : Author name
+~<text> : move to the center (left is default)
+~<text> : move to the right
+~# <text> : Heading level 1
+~## <text> : Heading level 2.. and so on
+~- <text> : Lists
+ ~ : if you want to use one of the above in a sentence but do not want it to be formatted. Like this document.
+~* <text> : bold
+~/ <text> : italics
+
+# Limitations for now
+- If you have added a title and an author, you must add a body or you will get errors
+- Formatting can only be applied to the whole row
+- If you are using < or > , please leave a line gap
+
+> Thank you

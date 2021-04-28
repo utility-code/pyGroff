@@ -1,0 +1,1 @@
+"Hello! This little library is a wrapper around groff. It will save your tears when you need to make any pdfs and word documents with more complex formatting done super easily for you. Do you know markdown already? Wow! you already know most of the syntax :)"
