@@ -15,6 +15,8 @@
 - You can get a word document too (you do need libreoffice for it)
 - Get auto generated, beautifully formatted pdfs and docs instantly
 - Not cry because you moved an image and now your document is in hieroglyphics
+- (You can also write in groff syntax in the file. It will work as well. Just in case you need something extra)
+
 
 ## Syntax
 - p runner.py -f "demo.txt" -o "syntax.pdf"  (most basic)
