@@ -39,6 +39,11 @@ def main(ag):
     subprocess.run(f"groff -ms {str(tempfile)} -Tpdf > {outfile}", shell=True)
     if ag.d == True:
         subprocess.run(f"rm {str(tempfile)}", shell=True)
+    if ag.w == True:
+        subprocess.run(
+            f"libreoffice --headless --convert-to docx --infilter='writer_pdf_import' {str(outfile)}",
+            shell=True,
+        )
 
     print(f"Done writing the file to -> {outfile}")
 

@@ -12,6 +12,7 @@
 ## What can you do
 - Write in a text file
 - Get a cover page as well :)
+- You can get a word document too (you do need libreoffice for it)
 - Get auto generated, beautifully formatted pdfs and docs instantly
 - Not cry because you moved an image and now your document is in hieroglyphics
 
@@ -31,6 +32,7 @@
 - Almost every unix system has groff preinstalled
 - Which means no windows. (Unless you are using WSL. In which case its coool)
 - You need python of course
+- If you want to convert to word, you need libreoffice.
 
 ## Contribution guidelines
 - Can I contribute?

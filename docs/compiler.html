@@ -67,6 +67,11 @@ def main(ag):
     subprocess.run(f&#34;groff -ms {str(tempfile)} -Tpdf &gt; {outfile}&#34;, shell=True)
     if ag.d == True:
         subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
+    if ag.w == True:
+        subprocess.run(
+            f&#34;libreoffice --headless --convert-to docx --infilter=&#39;writer_pdf_import&#39; {str(outfile)}&#34;,
+            shell=True,
+        )
 
     print(f&#34;Done writing the file to -&gt; {outfile}&#34;)
 
@@ -241,6 +246,11 @@ def intermediary_creator(fpath):
     subprocess.run(f&#34;groff -ms {str(tempfile)} -Tpdf &gt; {outfile}&#34;, shell=True)
     if ag.d == True:
         subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
+    if ag.w == True:
+        subprocess.run(
+            f&#34;libreoffice --headless --convert-to docx --infilter=&#39;writer_pdf_import&#39; {str(outfile)}&#34;,
+            shell=True,
+        )
 
     print(f&#34;Done writing the file to -&gt; {outfile}&#34;)</code></pre>
 </details>
