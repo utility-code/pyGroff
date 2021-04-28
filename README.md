@@ -1,6 +1,7 @@
 # pyGroff
 
 - A wrapper for groff using python to have a nicer syntax for groff documents
+- [DOCUMENTATION](https://subhadityamukherjee.github.io/pyGroff/)
 - Very similar to markdown. So if you know what that is. You will love this :)
 - We hate word -.-
 - Editing pdfs is a pain and please we are lazy

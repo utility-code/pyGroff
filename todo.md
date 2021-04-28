@@ -16,6 +16,7 @@
 ## Done
 
 - basic function
+- cover page
 - pdf gen
 - indents
 - titles

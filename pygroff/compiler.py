@@ -44,6 +44,9 @@ def main(ag):
 
 
 def get_date(form):
+    """
+    Date time formate for cover page
+    """
     import datetime
 
     return datetime.datetime.now().strftime(form)
