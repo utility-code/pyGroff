@@ -26,14 +26,27 @@ def main(ag):
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.parent / "temp.ms", "w+") as f:
+        if ag.c == True:
+            f.write(
+                f".ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n"
+            )
+            f.flush()
+
         f.write(intermediary_creator(fpath=fpath))
         f.flush()
     tempfile = fpath.parent / "temp.ms"
 
     subprocess.run(f"groff -ms {str(tempfile)} -Tpdf > {outfile}", shell=True)
-    subprocess.run(f"rm {str(tempfile)}", shell=True)
+    if ag.d == True:
+        subprocess.run(f"rm {str(tempfile)}", shell=True)
 
     print(f"Done writing the file to -> {outfile}")
+
+
+def get_date(form):
+    import datetime
+
+    return datetime.datetime.now().strftime(form)
 
 
 def ret_symbol(sentence, list_flag):

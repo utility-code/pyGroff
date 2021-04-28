@@ -54,14 +54,27 @@ def main(ag):
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.parent / &#34;temp.ms&#34;, &#34;w+&#34;) as f:
+        if ag.c == True:
+            f.write(
+                f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
+            )
+            f.flush()
+
         f.write(intermediary_creator(fpath=fpath))
         f.flush()
     tempfile = fpath.parent / &#34;temp.ms&#34;
 
     subprocess.run(f&#34;groff -ms {str(tempfile)} -Tpdf &gt; {outfile}&#34;, shell=True)
-    subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
+    if ag.d == True:
+        subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
 
     print(f&#34;Done writing the file to -&gt; {outfile}&#34;)
+
+
+def get_date(form):
+    import datetime
+
+    return datetime.datetime.now().strftime(form)
 
 
 def ret_symbol(sentence, list_flag):
@@ -140,6 +153,21 @@ def intermediary_creator(fpath):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="pygroff.compiler.get_date"><code class="name flex">
+<span>def <span class="ident">get_date</span></span>(<span>form)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_date(form):
+    import datetime
+
+    return datetime.datetime.now().strftime(form)</code></pre>
+</details>
+</dd>
 <dt id="pygroff.compiler.intermediary_creator"><code class="name flex">
 <span>def <span class="ident">intermediary_creator</span></span>(<span>fpath)</span>
 </code></dt>
@@ -194,12 +222,19 @@ def intermediary_creator(fpath):
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.parent / &#34;temp.ms&#34;, &#34;w+&#34;) as f:
+        if ag.c == True:
+            f.write(
+                f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
+            )
+            f.flush()
+
         f.write(intermediary_creator(fpath=fpath))
         f.flush()
     tempfile = fpath.parent / &#34;temp.ms&#34;
 
     subprocess.run(f&#34;groff -ms {str(tempfile)} -Tpdf &gt; {outfile}&#34;, shell=True)
-    subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
+    if ag.d == True:
+        subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
 
     print(f&#34;Done writing the file to -&gt; {outfile}&#34;)</code></pre>
 </details>
@@ -271,6 +306,7 @@ def intermediary_creator(fpath):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="pygroff.compiler.get_date" href="#pygroff.compiler.get_date">get_date</a></code></li>
 <li><code><a title="pygroff.compiler.intermediary_creator" href="#pygroff.compiler.intermediary_creator">intermediary_creator</a></code></li>
 <li><code><a title="pygroff.compiler.main" href="#pygroff.compiler.main">main</a></code></li>
 <li><code><a title="pygroff.compiler.ret_symbol" href="#pygroff.compiler.ret_symbol">ret_symbol</a></code></li>

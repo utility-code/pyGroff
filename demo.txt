@@ -17,10 +17,21 @@
  ~ : if you want to use one of the above in a sentence but do not want it to be formatted. Like this document.
 ~* <text> : bold
 ~/ <text> : italics
+~_ <text> : underline
+~+ <text> : New page
+
+# Need a cover page?
+*Use the arguments
+
+- -c True
+- -n "Your name"
+- -t "Project title"
+- -d This is optional. But it can be another date format
 
 # Limitations for now
 - If you have added a title and an author, you must add a body or you will get errors
 - Formatting can only be applied to the whole row
 - If you are using < or > , please leave a line gap
+- If you see any numbering/formatting not working, just leave a line gap. It should mostly work out. If not. File an issue
 
 > Thank you
