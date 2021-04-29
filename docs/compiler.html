@@ -28,23 +28,11 @@
 </summary>
 <pre><code class="python">import subprocess
 from pathlib import Path
+from pygroff.processor import *
 
 &#34;&#34;&#34;
-This is the main module which has almost all the required functions.
+This is the main module which calls all the required functions.
 &#34;&#34;&#34;
-dict_hash = {&#34;#&#34; * x: f&#34;.NH {x}&#34; for x in range(1, 6)}
-dict_symbols = {
-    &#34;%&#34;: &#34;.TL&#34;,
-    &#34;%&#34;: &#34;.TL&#34;,
-    &#34;@&#34;: &#34;.AU&#34;,
-    &#34;&lt;&#34;: &#34;.ad c&#34;,
-    &#34;&gt;&#34;: &#34;.ad r&#34;,
-    &#34;~&#34;: &#34;&#34;,
-    &#34;-&#34;: &#34;.IP &#34;,
-    &#34;*&#34;: &#34;.b &#34;,
-    &#34;/&#34;: &#34;.i &#34;,
-    &#34;_&#34;: &#34;.ul &#34;,
-}
 
 
 def main(ag):
@@ -54,104 +42,39 @@ def main(ag):
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.parent / &#34;temp.ms&#34;, &#34;w+&#34;) as f:
-        if ag.c == True:
+        if ag.cov == True:
             f.write(
                 f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
             )
             f.flush()
+        f.write(intermediary_creator(fpath=fpath, ag=ag))
+        if ag.toc == True:
+            f.write(&#34;\n.TC\n&#34;)
 
-        f.write(intermediary_creator(fpath=fpath))
-        f.flush()
     tempfile = fpath.parent / &#34;temp.ms&#34;
+    tempfile2 = fpath.parent / &#34;temp.ps&#34;
 
-    subprocess.run(f&#34;groff -ms {str(tempfile)} -Tpdf &gt; {outfile}&#34;, shell=True)
+    if ag.i == False:
+        subprocess.run(
+            f&#34;tbl {str(tempfile)} |groff -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
+        )
+    else:
+        subprocess.run(
+            f&#34;tbl {str(tempfile)} | groff -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
+            shell=True,
+        )
+
     if ag.d == True:
         subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
+        if ag.i == True:
+            subprocess.run(f&#34;rm {str(tempfile2)}&#34;, shell=True)
     if ag.w == True:
         subprocess.run(
             f&#34;libreoffice --headless --convert-to docx --infilter=&#39;writer_pdf_import&#39; {str(outfile)}&#34;,
             shell=True,
         )
 
-    print(f&#34;Done writing the file to -&gt; {outfile}&#34;)
-
-
-def get_date(form):
-    &#34;&#34;&#34;
-    Date time formate for cover page
-    &#34;&#34;&#34;
-    import datetime
-
-    return datetime.datetime.now().strftime(form)
-
-
-def ret_symbol(sentence, list_flag):
-    &#34;&#34;&#34;
-    This checks the dictionaries and identifies what to send to groff
-    &#34;&#34;&#34;
-
-    s0 = sentence[0]
-    se = sentence[-1]
-    if s0 in list(&#34;*/&#34;):
-        return (
-            &#34;\n&#34; + dict_symbols[s0] + &#34;\n&#34; + sentence[1::].lstrip() + &#34;\n.LP&#34;,
-            list_flag,
-        )
-
-    ch1 = [x in sentence for x in dict_hash.keys()]
-    counthash = ch1.count(True)
-    if counthash &gt; 0 and s0 != &#34;~&#34;:
-        return (
-            dict_hash[&#34;#&#34; * counthash] + &#34;.LP\n&#34; + sentence[counthash::].lstrip(),
-            list_flag,
-        )
-
-    else:
-        currentsym = dict_symbols[s0]
-        if s0 == &#34;-&#34;:
-            if list_flag == 1:
-                currentsym += str(list_flag) + &#34;)&#34;
-            else:
-                currentsym += str(list_flag) + &#34;)&#34;
-            list_flag += 1
-        else:
-            if list_flag &gt; 0:
-                list_flag = 1
-
-        currentsym = currentsym + &#34;\n&#34; + sentence[1::].lstrip()
-
-        if s0 in list(&#34;&lt;&gt;&#34;):
-            currentsym += &#34;\n.ad l&#34;
-        return currentsym, list_flag
-
-
-def intermediary_creator(fpath):
-    &#34;&#34;&#34;
-    Since groff needs an intermediary file, we create it. Dont worry! It will be deleted later :)
-    &#34;&#34;&#34;
-    f_in = open(fpath, &#34;r&#34;)
-    tbl = 0  # WIP
-    out_string = &#34;&#34;
-    flag = 0
-    list_flag = 1
-    for i, line in enumerate(f_in.readlines()):
-        try:
-            outs, list_flag = ret_symbol(line, list_flag=list_flag)
-            out_string += outs
-
-            flag = 0
-        except KeyError:
-            flag = 1
-        if flag == 1:
-            out_string += f&#34;.LP\n{line}&#34;
-            flag = 2
-        elif flag == 2:
-            out_string += line
-    if tbl == True:  # Ignore this for now. Will add table creation later
-        tempfile2 = fpath.parent / &#34;temp.ps&#34;
-        subprocess.run(f&#34;rm {str(tempfile)} {str(tempfile2)}&#34;, shell=True)
-
-    return out_string</code></pre>
+    print(f&#34;Done writing the file to -&gt; {outfile}&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -161,62 +84,6 @@ def intermediary_creator(fpath):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="pygroff.compiler.get_date"><code class="name flex">
-<span>def <span class="ident">get_date</span></span>(<span>form)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Date time formate for cover page</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_date(form):
-    &#34;&#34;&#34;
-    Date time formate for cover page
-    &#34;&#34;&#34;
-    import datetime
-
-    return datetime.datetime.now().strftime(form)</code></pre>
-</details>
-</dd>
-<dt id="pygroff.compiler.intermediary_creator"><code class="name flex">
-<span>def <span class="ident">intermediary_creator</span></span>(<span>fpath)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Since groff needs an intermediary file, we create it. Dont worry! It will be deleted later :)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def intermediary_creator(fpath):
-    &#34;&#34;&#34;
-    Since groff needs an intermediary file, we create it. Dont worry! It will be deleted later :)
-    &#34;&#34;&#34;
-    f_in = open(fpath, &#34;r&#34;)
-    tbl = 0  # WIP
-    out_string = &#34;&#34;
-    flag = 0
-    list_flag = 1
-    for i, line in enumerate(f_in.readlines()):
-        try:
-            outs, list_flag = ret_symbol(line, list_flag=list_flag)
-            out_string += outs
-
-            flag = 0
-        except KeyError:
-            flag = 1
-        if flag == 1:
-            out_string += f&#34;.LP\n{line}&#34;
-            flag = 2
-        elif flag == 2:
-            out_string += line
-    if tbl == True:  # Ignore this for now. Will add table creation later
-        tempfile2 = fpath.parent / &#34;temp.ps&#34;
-        subprocess.run(f&#34;rm {str(tempfile)} {str(tempfile2)}&#34;, shell=True)
-
-    return out_string</code></pre>
-</details>
-</dd>
 <dt id="pygroff.compiler.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>ag)</span>
 </code></dt>
@@ -233,19 +100,32 @@ def intermediary_creator(fpath):
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.parent / &#34;temp.ms&#34;, &#34;w+&#34;) as f:
-        if ag.c == True:
+        if ag.cov == True:
             f.write(
                 f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
             )
             f.flush()
+        f.write(intermediary_creator(fpath=fpath, ag=ag))
+        if ag.toc == True:
+            f.write(&#34;\n.TC\n&#34;)
 
-        f.write(intermediary_creator(fpath=fpath))
-        f.flush()
     tempfile = fpath.parent / &#34;temp.ms&#34;
+    tempfile2 = fpath.parent / &#34;temp.ps&#34;
 
-    subprocess.run(f&#34;groff -ms {str(tempfile)} -Tpdf &gt; {outfile}&#34;, shell=True)
+    if ag.i == False:
+        subprocess.run(
+            f&#34;tbl {str(tempfile)} |groff -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
+        )
+    else:
+        subprocess.run(
+            f&#34;tbl {str(tempfile)} | groff -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
+            shell=True,
+        )
+
     if ag.d == True:
         subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
+        if ag.i == True:
+            subprocess.run(f&#34;rm {str(tempfile2)}&#34;, shell=True)
     if ag.w == True:
         subprocess.run(
             f&#34;libreoffice --headless --convert-to docx --infilter=&#39;writer_pdf_import&#39; {str(outfile)}&#34;,
@@ -253,55 +133,6 @@ def intermediary_creator(fpath):
         )
 
     print(f&#34;Done writing the file to -&gt; {outfile}&#34;)</code></pre>
-</details>
-</dd>
-<dt id="pygroff.compiler.ret_symbol"><code class="name flex">
-<span>def <span class="ident">ret_symbol</span></span>(<span>sentence, list_flag)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This checks the dictionaries and identifies what to send to groff</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def ret_symbol(sentence, list_flag):
-    &#34;&#34;&#34;
-    This checks the dictionaries and identifies what to send to groff
-    &#34;&#34;&#34;
-
-    s0 = sentence[0]
-    se = sentence[-1]
-    if s0 in list(&#34;*/&#34;):
-        return (
-            &#34;\n&#34; + dict_symbols[s0] + &#34;\n&#34; + sentence[1::].lstrip() + &#34;\n.LP&#34;,
-            list_flag,
-        )
-
-    ch1 = [x in sentence for x in dict_hash.keys()]
-    counthash = ch1.count(True)
-    if counthash &gt; 0 and s0 != &#34;~&#34;:
-        return (
-            dict_hash[&#34;#&#34; * counthash] + &#34;.LP\n&#34; + sentence[counthash::].lstrip(),
-            list_flag,
-        )
-
-    else:
-        currentsym = dict_symbols[s0]
-        if s0 == &#34;-&#34;:
-            if list_flag == 1:
-                currentsym += str(list_flag) + &#34;)&#34;
-            else:
-                currentsym += str(list_flag) + &#34;)&#34;
-            list_flag += 1
-        else:
-            if list_flag &gt; 0:
-                list_flag = 1
-
-        currentsym = currentsym + &#34;\n&#34; + sentence[1::].lstrip()
-
-        if s0 in list(&#34;&lt;&gt;&#34;):
-            currentsym += &#34;\n.ad l&#34;
-        return currentsym, list_flag</code></pre>
 </details>
 </dd>
 </dl>
@@ -322,10 +153,7 @@ def intermediary_creator(fpath):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="pygroff.compiler.get_date" href="#pygroff.compiler.get_date">get_date</a></code></li>
-<li><code><a title="pygroff.compiler.intermediary_creator" href="#pygroff.compiler.intermediary_creator">intermediary_creator</a></code></li>
 <li><code><a title="pygroff.compiler.main" href="#pygroff.compiler.main">main</a></code></li>
-<li><code><a title="pygroff.compiler.ret_symbol" href="#pygroff.compiler.ret_symbol">ret_symbol</a></code></li>
 </ul>
 </li>
 </ul>

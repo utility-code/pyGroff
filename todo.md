@@ -1,14 +1,10 @@
 ## To Do
 
 - toc
-- images
-- codeblocks
 - detect if table -> tbl
-- python outputs
-- word document gen
 - multiple format
-- quotes
 - footnotes
+- format code
 
 ## Doing
 
@@ -26,6 +22,10 @@
 - lists
 - cover page
 - formatting
+- word document gen
+- images
+- codeblocks
+- python outputs
 
 ## Ideas
 

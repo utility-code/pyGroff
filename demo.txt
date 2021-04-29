@@ -5,12 +5,17 @@
 - -f : input file path
 - -o : output file name. (Dont give path!)
 
+# Image
+!drag.jpg
+
 # Main syntax
+
+## General 
 *Note that you have to remove the <>
 ~% <title> : Adds a title like the one in this document
 ~@ <author> : Author name
-~<text> : move to the center (left is default)
-~<text> : move to the right
+~< <text> : move to the center (left is default)
+~> <text> : move to the right
 ~# <text> : Heading level 1
 ~## <text> : Heading level 2.. and so on
 ~- <text> : Lists
@@ -20,7 +25,12 @@
 ~_ <text> : underline
 ~+ <text> : New page
 
-# Need a cover page?
+## Advanced
+~| <text> : Table. Format is |[title](1;3;4;5;6,1;3;4;8;9). Separate rows with , and lines with ;
+~! <image name.jpg> : Make sure it is in the same directory. Or specify the full path. Note that it will be converted to .eps format. 
+~^ <code> : Python code, in quotes like : "import numpy as np; z = np.random.rand(3,3);print(z)" . Please separate lines by ;
+
+## Need a cover page?
 *Use the arguments
 
 - -c True
@@ -33,5 +43,12 @@
 - Formatting can only be applied to the whole row
 - If you are using < or > , please leave a line gap
 - If you see any numbering/formatting not working, just leave a line gap. It should mostly work out. If not. File an issue
+
+# What about code
+
+^import numpy as np;z = np.random.rand(3,3); print(z)
+
+# What about tables
+|[Who is cool](me;me;me;you, 1;2;3)
 
 > Thank you
