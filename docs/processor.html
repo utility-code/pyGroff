@@ -48,6 +48,7 @@ dict_symbols = {
     &#34;/&#34;: &#34;.i &#34;,
     &#34;_&#34;: &#34;.ul &#34;,
     &#34;!&#34;: &#34;.PDFPIC&#34;,
+    &#34;+&#34;: &#34;.bp&#34;,
 }
 
 
@@ -69,7 +70,7 @@ def grab_image_and_convert(sentence):
         subprocess.run(
             f&#34;convert {str(fpath)} {str(fpath.with_suffix(&#39;.ps&#39;))}&#34;, shell=True
         )
-    return f&#34;\n.PSPIC {str(fpath.with_suffix(&#39;.ps&#39;))}\n&#34;
+    return f&#34;.DS L\n\n.PSPIC {str(fpath.with_suffix(&#39;.ps&#39;))}\n.DE\n&#34;
 
 
 def code_runner(x, ag):
@@ -122,6 +123,11 @@ def ret_symbol(sentence, list_flag, ag):
         return grab_image_and_convert(sentence), list_flag
 
     if s0 == &#34;^&#34;:
+        return &#34;\*{&#34; + sentence[1::], list_flag
+    if s0 == &#34;=&#34;:
+        return &#34;\n.EQ\n&#34; + sentence[1::] + &#34;\n.EN\n&#34;, list_flag
+
+    if s0 == &#34;)&#34;:
         return code_runner(sentence, ag), list_flag
     if s0 == &#34;|&#34;:
         return table_creator(sentence), list_flag
@@ -199,9 +205,6 @@ def intermediary_creator(fpath, ag):
             flag = 2
         elif flag == 2:
             out_string += line
-    if tbl == True:  # Ignore this for now. Will add table creation later
-        tempfile2 = fpath.parent / &#34;temp.ps&#34;
-        subprocess.run(f&#34;rm {str(tempfile)} {str(tempfile2)}&#34;, shell=True)
 
     return out_string</code></pre>
 </details>
@@ -280,7 +283,7 @@ Also saves the output of the code</p></div>
         subprocess.run(
             f&#34;convert {str(fpath)} {str(fpath.with_suffix(&#39;.ps&#39;))}&#34;, shell=True
         )
-    return f&#34;\n.PSPIC {str(fpath.with_suffix(&#39;.ps&#39;))}\n&#34;</code></pre>
+    return f&#34;.DS L\n\n.PSPIC {str(fpath.with_suffix(&#39;.ps&#39;))}\n.DE\n&#34;</code></pre>
 </details>
 </dd>
 <dt id="pygroff.processor.intermediary_creator"><code class="name flex">
@@ -317,9 +320,6 @@ Also saves the output of the code</p></div>
             flag = 2
         elif flag == 2:
             out_string += line
-    if tbl == True:  # Ignore this for now. Will add table creation later
-        tempfile2 = fpath.parent / &#34;temp.ps&#34;
-        subprocess.run(f&#34;rm {str(tempfile)} {str(tempfile2)}&#34;, shell=True)
 
     return out_string</code></pre>
 </details>
@@ -343,6 +343,11 @@ Also saves the output of the code</p></div>
         return grab_image_and_convert(sentence), list_flag
 
     if s0 == &#34;^&#34;:
+        return &#34;\*{&#34; + sentence[1::], list_flag
+    if s0 == &#34;=&#34;:
+        return &#34;\n.EQ\n&#34; + sentence[1::] + &#34;\n.EN\n&#34;, list_flag
+
+    if s0 == &#34;)&#34;:
         return code_runner(sentence, ag), list_flag
     if s0 == &#34;|&#34;:
         return table_creator(sentence), list_flag

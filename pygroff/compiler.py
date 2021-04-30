@@ -13,7 +13,7 @@ def main(ag):
     """
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
-    with open(fpath.parent / "temp.ms", "w+") as f:
+    with open(fpath.with_suffix(".ms"), "w+") as f:
         if ag.cov == True:
             f.write(
                 f".ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n"
@@ -23,16 +23,16 @@ def main(ag):
         if ag.toc == True:
             f.write("\n.TC\n")
 
-    tempfile = fpath.parent / "temp.ms"
-    tempfile2 = fpath.parent / "temp.ps"
+    tempfile = fpath.with_suffix(".ms")
+    tempfile2 = fpath.with_suffix(".ps")
 
     if ag.i == False:
         subprocess.run(
-            f"tbl {str(tempfile)} |groff -mspdf -Tpdf > {outfile}", shell=True
+            f"tbl {str(tempfile)}|groff -e -mspdf -Tpdf > {outfile}", shell=True
         )
     else:
         subprocess.run(
-            f"tbl {str(tempfile)} | groff -mspdf -Tps > {str(tempfile2)} && ps2pdf {str(tempfile2)} {outfile}",
+            f"tbl {str(tempfile)} | groff -e -mspdf -Tps > {str(tempfile2)} && ps2pdf {str(tempfile2)} {outfile}",
             shell=True,
         )
 

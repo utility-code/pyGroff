@@ -20,6 +20,7 @@ dict_symbols = {
     "/": ".i ",
     "_": ".ul ",
     "!": ".PDFPIC",
+    "+": ".bp",
 }
 
 
@@ -41,7 +42,7 @@ def grab_image_and_convert(sentence):
         subprocess.run(
             f"convert {str(fpath)} {str(fpath.with_suffix('.ps'))}", shell=True
         )
-    return f"\n.PSPIC {str(fpath.with_suffix('.ps'))}\n"
+    return f".DS L\n\n.PSPIC {str(fpath.with_suffix('.ps'))}\n.DE\n"
 
 
 def code_runner(x, ag):
@@ -94,6 +95,11 @@ def ret_symbol(sentence, list_flag, ag):
         return grab_image_and_convert(sentence), list_flag
 
     if s0 == "^":
+        return "\*{" + sentence[1::], list_flag
+    if s0 == "=":
+        return "\n.EQ\n" + sentence[1::] + "\n.EN\n", list_flag
+
+    if s0 == ")":
         return code_runner(sentence, ag), list_flag
     if s0 == "|":
         return table_creator(sentence), list_flag
@@ -171,8 +177,5 @@ def intermediary_creator(fpath, ag):
             flag = 2
         elif flag == 2:
             out_string += line
-    if tbl == True:  # Ignore this for now. Will add table creation later
-        tempfile2 = fpath.parent / "temp.ps"
-        subprocess.run(f"rm {str(tempfile)} {str(tempfile2)}", shell=True)
 
     return out_string

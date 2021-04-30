@@ -1,7 +1,5 @@
 ## To Do
 
-- toc
-- detect if table -> tbl
 - multiple format
 - footnotes
 - format code
@@ -26,6 +24,8 @@
 - images
 - codeblocks
 - python outputs
+- toc
+- detect if table -> tbl
 
 ## Ideas
 

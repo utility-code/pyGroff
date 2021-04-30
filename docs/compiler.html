@@ -41,7 +41,7 @@ def main(ag):
     &#34;&#34;&#34;
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
-    with open(fpath.parent / &#34;temp.ms&#34;, &#34;w+&#34;) as f:
+    with open(fpath.with_suffix(&#34;.ms&#34;), &#34;w+&#34;) as f:
         if ag.cov == True:
             f.write(
                 f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
@@ -51,16 +51,16 @@ def main(ag):
         if ag.toc == True:
             f.write(&#34;\n.TC\n&#34;)
 
-    tempfile = fpath.parent / &#34;temp.ms&#34;
-    tempfile2 = fpath.parent / &#34;temp.ps&#34;
+    tempfile = fpath.with_suffix(&#34;.ms&#34;)
+    tempfile2 = fpath.with_suffix(&#34;.ps&#34;)
 
     if ag.i == False:
         subprocess.run(
-            f&#34;tbl {str(tempfile)} |groff -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
+            f&#34;tbl {str(tempfile)}|groff -e -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
         )
     else:
         subprocess.run(
-            f&#34;tbl {str(tempfile)} | groff -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
+            f&#34;tbl {str(tempfile)} | groff -e -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
             shell=True,
         )
 
@@ -99,7 +99,7 @@ def main(ag):
     &#34;&#34;&#34;
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
-    with open(fpath.parent / &#34;temp.ms&#34;, &#34;w+&#34;) as f:
+    with open(fpath.with_suffix(&#34;.ms&#34;), &#34;w+&#34;) as f:
         if ag.cov == True:
             f.write(
                 f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
@@ -109,16 +109,16 @@ def main(ag):
         if ag.toc == True:
             f.write(&#34;\n.TC\n&#34;)
 
-    tempfile = fpath.parent / &#34;temp.ms&#34;
-    tempfile2 = fpath.parent / &#34;temp.ps&#34;
+    tempfile = fpath.with_suffix(&#34;.ms&#34;)
+    tempfile2 = fpath.with_suffix(&#34;.ps&#34;)
 
     if ag.i == False:
         subprocess.run(
-            f&#34;tbl {str(tempfile)} |groff -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
+            f&#34;tbl {str(tempfile)}|groff -e -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
         )
     else:
         subprocess.run(
-            f&#34;tbl {str(tempfile)} | groff -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
+            f&#34;tbl {str(tempfile)} | groff -e -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
             shell=True,
         )
 
