@@ -7,6 +7,7 @@ from pathlib import Path
 This module takes care of the bulk of processing etc
 """
 
+# adds ranges of headers
 dict_hash = {"#" * x: f".NH {x}" for x in range(1, 6)}
 dict_symbols = {
     "%": ".TL",
@@ -56,7 +57,7 @@ def code_runner(x, ag):
             "\n Output : \n\n"
             + str(
                 subprocess.Popen(
-                    f'python -c "{x[1::]}"', shell=True, stdout=subprocess.PIPE
+                    f'{ag.l} "{x[1::]}"', shell=True, stdout=subprocess.PIPE
                 )
                 .communicate()[0]
                 .decode("utf-8")
@@ -85,6 +86,17 @@ def table_creator(x):
     return tb
 
 
+def subscript(sentence):
+    return "\*{" + sentence[1::]
+
+
+def eqn(sentence):
+    """
+    Returns a tag of equations. This is preprocessed by eqn (GNU troff)
+    """
+    return "\n.EQ\n" + sentence[1::] + "\n.EN\n"
+
+
 def ret_symbol(sentence, list_flag, ag):
     """
     This checks the dictionaries and identifies what to send to groff
@@ -95,9 +107,9 @@ def ret_symbol(sentence, list_flag, ag):
         return grab_image_and_convert(sentence), list_flag
 
     if s0 == "^":
-        return "\*{" + sentence[1::], list_flag
+        return subscript(sentence), list_flag
     if s0 == "=":
-        return "\n.EQ\n" + sentence[1::] + "\n.EN\n", list_flag
+        return eqn(sentence), list_flag
 
     if s0 == ")":
         return code_runner(sentence, ag), list_flag
@@ -136,20 +148,6 @@ def ret_symbol(sentence, list_flag, ag):
         if s0 in list("<>"):
             currentsym += "\n.ad l"
         return currentsym, list_flag
-
-
-#  def quotematcher(sentence):
-#      """
-#      Find if there are any strings in quotes
-#      """
-#      return re.findall(r'\"(.+?)\"', sentence)
-
-#
-#  def quotereplace(quoted, line):
-#      for i in quoted:
-#          line = line.replace(f'"{i}"', f"\*(lq{i}\*(rq")
-#      return line
-#
 
 
 def intermediary_creator(fpath, ag):

@@ -35,36 +35,12 @@ This is the main module which calls all the required functions.
 &#34;&#34;&#34;
 
 
-def main(ag):
+def clean_up(ag, tempfile, tempfile2, outfile):
     &#34;&#34;&#34;
-    This calls the required functions and cleans up after the program is done
+    Delete unneeded files
+    Convert to word document if needed
     &#34;&#34;&#34;
-    fpath = Path(ag.f)
-    outfile = Path(ag.f).parent / ag.o
-    with open(fpath.with_suffix(&#34;.ms&#34;), &#34;w+&#34;) as f:
-        if ag.cov == True:
-            f.write(
-                f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
-            )
-            f.flush()
-        f.write(intermediary_creator(fpath=fpath, ag=ag))
-        if ag.toc == True:
-            f.write(&#34;\n.TC\n&#34;)
-
-    tempfile = fpath.with_suffix(&#34;.ms&#34;)
-    tempfile2 = fpath.with_suffix(&#34;.ps&#34;)
-
-    if ag.i == False:
-        subprocess.run(
-            f&#34;tbl {str(tempfile)}|groff -e -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
-        )
-    else:
-        subprocess.run(
-            f&#34;tbl {str(tempfile)} | groff -e -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
-            shell=True,
-        )
-
-    if ag.d == True:
+    if ag.d == True:  # For debugging, delete or not delete files
         subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
         if ag.i == True:
             subprocess.run(f&#34;rm {str(tempfile2)}&#34;, shell=True)
@@ -73,6 +49,43 @@ def main(ag):
             f&#34;libreoffice --headless --convert-to docx --infilter=&#39;writer_pdf_import&#39; {str(outfile)}&#34;,
             shell=True,
         )
+
+
+def decide_image(ag, tempfile, tempfile2, outfile):
+    &#34;&#34;&#34;
+    Decide if the file has images. Default is true. Not much difference, except more images = more compile time
+    &#34;&#34;&#34;
+    if ag.i == False:  # If there are images
+        subprocess.run(
+            f&#34;tbl {str(tempfile)}|groff -e -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
+        )
+    else:  # Save compile time
+        subprocess.run(
+            f&#34;tbl {str(tempfile)} | groff -e -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
+            shell=True,
+        )
+
+
+def main(ag):
+    &#34;&#34;&#34;
+    This calls the required functions and cleans up after the program is done
+    &#34;&#34;&#34;
+    fpath = Path(ag.f)
+    outfile = Path(ag.f).parent / ag.o
+    with open(fpath.with_suffix(&#34;.ms&#34;), &#34;w+&#34;) as f:
+        if ag.cov == True:  # Add cover
+            f.write(
+                f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
+            )
+            f.flush()
+        f.write(intermediary_creator(fpath=fpath, ag=ag))
+
+        if ag.toc == True:  # Add table of contents
+            f.write(&#34;\n.TC\n&#34;)
+
+    tempfile, tempfile2 = fpath.with_suffix(&#34;.ms&#34;), fpath.with_suffix(&#34;.ps&#34;)
+    decide_image(ag, tempfile, tempfile2, outfile)
+    clean_up(ag, tempfile, tempfile2, outfile)
 
     print(f&#34;Done writing the file to -&gt; {outfile}&#34;)</code></pre>
 </details>
@@ -84,6 +97,56 @@ def main(ag):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="pygroff.compiler.clean_up"><code class="name flex">
+<span>def <span class="ident">clean_up</span></span>(<span>ag, tempfile, tempfile2, outfile)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete unneeded files
+Convert to word document if needed</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clean_up(ag, tempfile, tempfile2, outfile):
+    &#34;&#34;&#34;
+    Delete unneeded files
+    Convert to word document if needed
+    &#34;&#34;&#34;
+    if ag.d == True:  # For debugging, delete or not delete files
+        subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
+        if ag.i == True:
+            subprocess.run(f&#34;rm {str(tempfile2)}&#34;, shell=True)
+    if ag.w == True:
+        subprocess.run(
+            f&#34;libreoffice --headless --convert-to docx --infilter=&#39;writer_pdf_import&#39; {str(outfile)}&#34;,
+            shell=True,
+        )</code></pre>
+</details>
+</dd>
+<dt id="pygroff.compiler.decide_image"><code class="name flex">
+<span>def <span class="ident">decide_image</span></span>(<span>ag, tempfile, tempfile2, outfile)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decide if the file has images. Default is true. Not much difference, except more images = more compile time</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decide_image(ag, tempfile, tempfile2, outfile):
+    &#34;&#34;&#34;
+    Decide if the file has images. Default is true. Not much difference, except more images = more compile time
+    &#34;&#34;&#34;
+    if ag.i == False:  # If there are images
+        subprocess.run(
+            f&#34;tbl {str(tempfile)}|groff -e -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
+        )
+    else:  # Save compile time
+        subprocess.run(
+            f&#34;tbl {str(tempfile)} | groff -e -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
+            shell=True,
+        )</code></pre>
+</details>
+</dd>
 <dt id="pygroff.compiler.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>ag)</span>
 </code></dt>
@@ -100,37 +163,19 @@ def main(ag):
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.with_suffix(&#34;.ms&#34;), &#34;w+&#34;) as f:
-        if ag.cov == True:
+        if ag.cov == True:  # Add cover
             f.write(
                 f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
             )
             f.flush()
         f.write(intermediary_creator(fpath=fpath, ag=ag))
-        if ag.toc == True:
+
+        if ag.toc == True:  # Add table of contents
             f.write(&#34;\n.TC\n&#34;)
 
-    tempfile = fpath.with_suffix(&#34;.ms&#34;)
-    tempfile2 = fpath.with_suffix(&#34;.ps&#34;)
-
-    if ag.i == False:
-        subprocess.run(
-            f&#34;tbl {str(tempfile)}|groff -e -mspdf -Tpdf &gt; {outfile}&#34;, shell=True
-        )
-    else:
-        subprocess.run(
-            f&#34;tbl {str(tempfile)} | groff -e -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
-            shell=True,
-        )
-
-    if ag.d == True:
-        subprocess.run(f&#34;rm {str(tempfile)}&#34;, shell=True)
-        if ag.i == True:
-            subprocess.run(f&#34;rm {str(tempfile2)}&#34;, shell=True)
-    if ag.w == True:
-        subprocess.run(
-            f&#34;libreoffice --headless --convert-to docx --infilter=&#39;writer_pdf_import&#39; {str(outfile)}&#34;,
-            shell=True,
-        )
+    tempfile, tempfile2 = fpath.with_suffix(&#34;.ms&#34;), fpath.with_suffix(&#34;.ps&#34;)
+    decide_image(ag, tempfile, tempfile2, outfile)
+    clean_up(ag, tempfile, tempfile2, outfile)
 
     print(f&#34;Done writing the file to -&gt; {outfile}&#34;)</code></pre>
 </details>
@@ -153,6 +198,8 @@ def main(ag):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="pygroff.compiler.clean_up" href="#pygroff.compiler.clean_up">clean_up</a></code></li>
+<li><code><a title="pygroff.compiler.decide_image" href="#pygroff.compiler.decide_image">decide_image</a></code></li>
 <li><code><a title="pygroff.compiler.main" href="#pygroff.compiler.main">main</a></code></li>
 </ul>
 </li>

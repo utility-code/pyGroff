@@ -1,7 +1,5 @@
 ## To Do
 
-- multiple format
-- footnotes
 - format code
 
 ## Doing

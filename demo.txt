@@ -80,10 +80,12 @@ pyGroff is a tiny wrapper around groff which will let you create professional pd
 
 ## Some examples
 = a sup 3 over b sup 5
-= x=3+5x-=3+gamma
+= x=3+5x-=3 + gamma
 = a sup 3 sup 5 * 600
 = 7 gamma + 10 delta = 100
 = f ( theta ) = .8 pi r
 = sum from {i=1} to inf sub 1 = 1000x
 
 > Thank you
+
+
