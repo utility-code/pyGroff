@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">import subprocess
 from pathlib import Path
+from PIL import Image
 
 #  import re
 
@@ -38,7 +39,6 @@ This module takes care of the bulk of processing etc
 # adds ranges of headers
 dict_hash = {&#34;#&#34; * x: f&#34;.NH {x}&#34; for x in range(1, 6)}
 dict_symbols = {
-    &#34;%&#34;: &#34;.TL&#34;,
     &#34;%&#34;: &#34;.TL&#34;,
     &#34;@&#34;: &#34;.AU&#34;,
     &#34;&lt;&#34;: &#34;.ad c&#34;,
@@ -51,6 +51,7 @@ dict_symbols = {
     &#34;!&#34;: &#34;.PDFPIC&#34;,
     &#34;+&#34;: &#34;.bp&#34;,
 }
+full_list = list(&#34;#%@&lt;&gt;~*/_!+=&#34;)
 
 
 def get_date(form):
@@ -68,9 +69,14 @@ def grab_image_and_convert(sentence):
     &#34;&#34;&#34;
     fpath = Path(sentence[1::].strip())
     if fpath.suffix != &#34;.ps&#34;:
-        subprocess.run(
-            f&#34;convert {str(fpath)} {str(fpath.with_suffix(&#39;.ps&#39;))}&#34;, shell=True
+        Image.open(fpath).convert(&#34;RGB&#34;).save(
+            str(fpath.with_suffix(&#34;.ps&#34;)), lossless=True
         )
+
+        #
+        #  subprocess.run(
+        #      f&#34;convert {str(fpath)} {str(fpath.with_suffix(&#39;.ps&#39;))}&#34;, shell=True
+        #  )
     return f&#34;.DS L\n\n.PSPIC {str(fpath.with_suffix(&#39;.ps&#39;))}\n.DE\n&#34;
 
 
@@ -149,6 +155,8 @@ def ret_symbol(sentence, list_flag, ag):
             &#34;\n&#34; + dict_symbols[s0] + &#34;\n&#34; + sentence[1::].lstrip() + &#34;\n.LP&#34;,
             list_flag,
         )
+    if list_flag &gt; 0 and s0 in full_list:
+        list_flag = 0
 
     ch1 = [x in sentence for x in dict_hash.keys()]
     counthash = ch1.count(True)
@@ -161,16 +169,12 @@ def ret_symbol(sentence, list_flag, ag):
 
     else:
         currentsym = dict_symbols[s0]
-        if s0 == &#34;-&#34;:
-            if list_flag == 1:
-                currentsym += str(list_flag) + &#34;)&#34;
-            else:
-                currentsym += str(list_flag) + &#34;)&#34;
+        if s0 == &#34;-&#34; and list_flag == 0:
+            list_flag = 1
+            currentsym += str(list_flag) + &#34;)&#34;
+        elif s0 == &#34;-&#34; and list_flag &gt; 0:
             list_flag += 1
-        else:
-            if list_flag &gt; 0:
-                list_flag = 1
-
+            currentsym += str(list_flag) + &#34;)&#34;
         currentsym = currentsym + &#34;\n&#34; + sentence[1::].lstrip()
 
         if s0 in list(&#34;&lt;&gt;&#34;):
@@ -183,20 +187,15 @@ def intermediary_creator(fpath, ag):
     Since groff needs an intermediary file, we create it. Dont worry! It will be deleted later :)
     &#34;&#34;&#34;
     f_in = open(fpath, &#34;r&#34;)
-    tbl = 0  # WIP
     out_string = &#34;&#34;
     flag = 0
-    list_flag = 1
+    list_flag = 0
     for i, line in enumerate(f_in.readlines()):
-        #  quoted = quotematcher(line)
-        #  line = quotereplace(quoted, line)
-
         try:
             outs, list_flag = ret_symbol(line, list_flag=list_flag, ag=ag)
             out_string += outs
-
             flag = 0
-        except KeyError:
+        except KeyError:  # Basically every other letter
             flag = 1
         if flag == 1:
             out_string += f&#34;.LP\n{line}&#34;
@@ -294,9 +293,14 @@ Also saves the output of the code</p></div>
     &#34;&#34;&#34;
     fpath = Path(sentence[1::].strip())
     if fpath.suffix != &#34;.ps&#34;:
-        subprocess.run(
-            f&#34;convert {str(fpath)} {str(fpath.with_suffix(&#39;.ps&#39;))}&#34;, shell=True
+        Image.open(fpath).convert(&#34;RGB&#34;).save(
+            str(fpath.with_suffix(&#34;.ps&#34;)), lossless=True
         )
+
+        #
+        #  subprocess.run(
+        #      f&#34;convert {str(fpath)} {str(fpath.with_suffix(&#39;.ps&#39;))}&#34;, shell=True
+        #  )
     return f&#34;.DS L\n\n.PSPIC {str(fpath.with_suffix(&#39;.ps&#39;))}\n.DE\n&#34;</code></pre>
 </details>
 </dd>
@@ -314,20 +318,15 @@ Also saves the output of the code</p></div>
     Since groff needs an intermediary file, we create it. Dont worry! It will be deleted later :)
     &#34;&#34;&#34;
     f_in = open(fpath, &#34;r&#34;)
-    tbl = 0  # WIP
     out_string = &#34;&#34;
     flag = 0
-    list_flag = 1
+    list_flag = 0
     for i, line in enumerate(f_in.readlines()):
-        #  quoted = quotematcher(line)
-        #  line = quotereplace(quoted, line)
-
         try:
             outs, list_flag = ret_symbol(line, list_flag=list_flag, ag=ag)
             out_string += outs
-
             flag = 0
-        except KeyError:
+        except KeyError:  # Basically every other letter
             flag = 1
         if flag == 1:
             out_string += f&#34;.LP\n{line}&#34;
@@ -371,6 +370,8 @@ Also saves the output of the code</p></div>
             &#34;\n&#34; + dict_symbols[s0] + &#34;\n&#34; + sentence[1::].lstrip() + &#34;\n.LP&#34;,
             list_flag,
         )
+    if list_flag &gt; 0 and s0 in full_list:
+        list_flag = 0
 
     ch1 = [x in sentence for x in dict_hash.keys()]
     counthash = ch1.count(True)
@@ -383,16 +384,12 @@ Also saves the output of the code</p></div>
 
     else:
         currentsym = dict_symbols[s0]
-        if s0 == &#34;-&#34;:
-            if list_flag == 1:
-                currentsym += str(list_flag) + &#34;)&#34;
-            else:
-                currentsym += str(list_flag) + &#34;)&#34;
+        if s0 == &#34;-&#34; and list_flag == 0:
+            list_flag = 1
+            currentsym += str(list_flag) + &#34;)&#34;
+        elif s0 == &#34;-&#34; and list_flag &gt; 0:
             list_flag += 1
-        else:
-            if list_flag &gt; 0:
-                list_flag = 1
-
+            currentsym += str(list_flag) + &#34;)&#34;
         currentsym = currentsym + &#34;\n&#34; + sentence[1::].lstrip()
 
         if s0 in list(&#34;&lt;&gt;&#34;):

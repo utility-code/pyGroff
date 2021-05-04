@@ -33,7 +33,6 @@
 ## Examples of langauge strings
 - python -c (default)
 - argument -l
-- julia -e
 - R -e
 
 ## FAQ
@@ -42,8 +41,10 @@
         - Then run "groff -ms {infile} -Tpdf > {outfile}" replacing the infile and outfile respectively.
 
 ## Requirements
+- For python dependencies, using pip install -r requirements.txt
+- PIL
 - Almost every unix system has groff preinstalled.
-- Either get images in postscript (eps) format. (You need this for laTEX too). Or if you have imagemagick installed. Then this will work.
+- Either get images in postscript (eps) format. (You need this for laTEX too). 
 - Which means no windows. (Unless you are using WSL. In which case its coool)
 - You need python of course.
 - If you want to convert to word, you need libreoffice.

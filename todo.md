@@ -1,6 +1,5 @@
 ## To Do
 
-- format code
 
 ## Doing
 
@@ -24,6 +23,7 @@
 - python outputs
 - toc
 - detect if table -> tbl
+- format code
 
 ## Ideas
 
