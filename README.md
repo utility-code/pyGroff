@@ -20,6 +20,15 @@
 - Not cry because you moved an image and now your document is in hieroglyphics
 - (You can also write in groff syntax in the file. It will work as well. Just in case you need something extra)
 
+## Requirements
+- You need python of course.
+- For python dependencies, using pip install -r requirements.txt (Only PIL)
+- Almost every unix system has groff preinstalled.
+- If you want to convert to word, you need libreoffice.
+- If you want to get a table of contents you will need pdftk
+        - yay pdftk #arch
+        - sudo pacman -S pdftk #arch
+        - sudo apt install pdftk
 
 ## Syntax
 - p runner.py -f "demo.txt" -o "syntax.pdf"  (most basic)
@@ -39,15 +48,6 @@
 - I dont like the cover page
         - If you know a bit of groff (check the links below), you can use "-d False" and then edit whatever you want using groff itself.
         - Then run "groff -ms {infile} -Tpdf > {outfile}" replacing the infile and outfile respectively.
-
-## Requirements
-- For python dependencies, using pip install -r requirements.txt
-- PIL
-- Almost every unix system has groff preinstalled.
-- Either get images in postscript (eps) format. (You need this for laTEX too). 
-- Which means no windows. (Unless you are using WSL. In which case its coool)
-- You need python of course.
-- If you want to convert to word, you need libreoffice.
 
 ## Contribution guidelines
 - Can I contribute?

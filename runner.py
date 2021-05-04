@@ -15,9 +15,7 @@ arg.add_argument("-o", type=str, help="Output file path", required=True)
 arg.add_argument(
     "-toc", type=str, help="Add table of contents", required=False, default=True
 )
-arg.add_argument(
-    "-cov", type=bool, help="Add cover page", required=False, default=False
-)
+arg.add_argument("-c", help="Add cover page", action="store_true")
 arg.add_argument(
     "-w", type=bool, help="Convert to word?", required=False, default=False
 )

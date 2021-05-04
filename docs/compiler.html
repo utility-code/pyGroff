@@ -64,6 +64,19 @@ def decide_image(ag, tempfile, tempfile2, outfile):
             f&#34;tbl {str(tempfile)} | groff -e -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
             shell=True,
         )
+    if ag.toc == True:
+        if ag.c == True:
+            subprocess.run(
+                f&#34;pdftk {str(outfile)} cat 1 end 2-r2 output temp-{str(outfile)}&#34;,
+                shell=True,
+            )
+        else:
+            subprocess.run(
+                f&#34;pdftk {str(outfile)} cat end 1-r2 output temp-{str(outfile)}&#34;,
+                shell=True,
+            )
+        Path.unlink(Path(str(outfile)))
+        Path.rename(Path(&#34;temp-&#34; + str(outfile)), outfile)
 
 
 def main(ag):
@@ -73,7 +86,7 @@ def main(ag):
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.with_suffix(&#34;.ms&#34;), &#34;w+&#34;) as f:
-        if ag.cov == True:  # Add cover
+        if ag.c == True:  # Add cover
             f.write(
                 f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
             )
@@ -144,7 +157,20 @@ Convert to word document if needed</p></div>
         subprocess.run(
             f&#34;tbl {str(tempfile)} | groff -e -mspdf -Tps &gt; {str(tempfile2)} &amp;&amp; ps2pdf {str(tempfile2)} {outfile}&#34;,
             shell=True,
-        )</code></pre>
+        )
+    if ag.toc == True:
+        if ag.c == True:
+            subprocess.run(
+                f&#34;pdftk {str(outfile)} cat 1 end 2-r2 output temp-{str(outfile)}&#34;,
+                shell=True,
+            )
+        else:
+            subprocess.run(
+                f&#34;pdftk {str(outfile)} cat end 1-r2 output temp-{str(outfile)}&#34;,
+                shell=True,
+            )
+        Path.unlink(Path(str(outfile)))
+        Path.rename(Path(&#34;temp-&#34; + str(outfile)), outfile)</code></pre>
 </details>
 </dd>
 <dt id="pygroff.compiler.main"><code class="name flex">
@@ -163,7 +189,7 @@ Convert to word document if needed</p></div>
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.with_suffix(&#34;.ms&#34;), &#34;w+&#34;) as f:
-        if ag.cov == True:  # Add cover
+        if ag.c == True:  # Add cover
             f.write(
                 f&#34;.ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n&#34;
             )

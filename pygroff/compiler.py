@@ -36,6 +36,19 @@ def decide_image(ag, tempfile, tempfile2, outfile):
             f"tbl {str(tempfile)} | groff -e -mspdf -Tps > {str(tempfile2)} && ps2pdf {str(tempfile2)} {outfile}",
             shell=True,
         )
+    if ag.toc == True:
+        if ag.c == True:
+            subprocess.run(
+                f"pdftk {str(outfile)} cat 1 end 2-r2 output temp-{str(outfile)}",
+                shell=True,
+            )
+        else:
+            subprocess.run(
+                f"pdftk {str(outfile)} cat end 1-r2 output temp-{str(outfile)}",
+                shell=True,
+            )
+        Path.unlink(Path(str(outfile)))
+        Path.rename(Path("temp-" + str(outfile)), outfile)
 
 
 def main(ag):
@@ -45,7 +58,7 @@ def main(ag):
     fpath = Path(ag.f)
     outfile = Path(ag.f).parent / ag.o
     with open(fpath.with_suffix(".ms"), "w+") as f:
-        if ag.cov == True:  # Add cover
+        if ag.c == True:  # Add cover
             f.write(
                 f".ad c\n.tp\n.sp 5\n.(c\n{ag.t}\n.)c\n.sp 2\n.(c\n{ag.n}\n.)c\n.sp 2\n.(c\n{get_date(ag.df)}\n.)c\n.bp\n.ad l\n"
             )
